@@ -9,8 +9,8 @@ import java.util.Map;
 @Getter
 @AllArgsConstructor
 public enum Role {
-    ADMIN("admin"),
-    USER("user");
+    ROLE_ADMIN("admin"),
+    ROLE_USER("user");
 
     private String value;
 

@@ -5,12 +5,15 @@ import com.example.todo.domain.dto.response.UserResponseDto;
 import com.example.todo.domain.entity.User;
 import com.example.todo.domain.mapper.request.UserRequestMapper;
 import com.example.todo.domain.mapper.response.UserResponseMapper;
+import com.example.todo.jwt.CustomUserDetails;
 import com.example.todo.repository.UserRepository;
 import com.example.todo.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -71,6 +74,15 @@ public class UserServiceImpl implements UserService {
         }else {
             throw new NullPointerException();
         }
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) {
+        User user = userRepository.findByUsername(username);
+        if (user == null){
+            throw new UsernameNotFoundException(username);
+        }
+        return new CustomUserDetails(user);
     }
 
 }
