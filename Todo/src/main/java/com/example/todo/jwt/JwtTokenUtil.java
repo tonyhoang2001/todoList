@@ -19,7 +19,7 @@ public class JwtTokenUtil {
     public String generateAccessKey(CustomUserDetails userDetails) {
 
         return Jwts.builder()
-                .setSubject(userDetails.getUsername())
+                .setSubject(userDetails.getUser().getId() + "," + userDetails.getUsername())
                 .claim("role", userDetails.getUser().getRole().getValue())
                 .setIssuer("Tony")
                 .setIssuedAt(new Date())

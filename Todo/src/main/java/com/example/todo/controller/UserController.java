@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.RolesAllowed;
+
 @RestController
 @RequestMapping("/v1/api/user")
 @RequiredArgsConstructor
@@ -20,6 +22,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("")
+    @RolesAllowed({"ROLE_USER","ROLE_ADMIN"})
     public ResponseEntity<Page<UserResponseDto>> getAllUser(Pageable pageable) {
         return ResponseEntity
                 .ok()
@@ -27,6 +30,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @RolesAllowed({"ROLE_USER","ROLE_ADMIN"})
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable String id) {
         return ResponseEntity
                 .ok()
@@ -34,6 +38,7 @@ public class UserController {
     }
 
     @PostMapping("/create")
+    @RolesAllowed({"ROLE_ADMIN"})
     public ResponseEntity<UserResponseDto> createUser(@RequestBody UserRequestDto userRequestDto) {
         return ResponseEntity
                 .accepted()
@@ -41,6 +46,7 @@ public class UserController {
     }
 
     @PutMapping("/update")
+    @RolesAllowed({"ROLE_ADMIN"})
     public ResponseEntity<UserResponseDto> updateUser(@RequestBody UserRequestDto userRequestDto) {
         return ResponseEntity
                 .accepted()
@@ -48,6 +54,7 @@ public class UserController {
     }
 
     @DeleteMapping("/delete/{id}")
+    @RolesAllowed({"ROLE_ADMIN"})
     public ResponseEntity<?> deleteUserById(@PathVariable String id) {
         userService.deleteUserById(id);
         return ResponseEntity.ok(HttpStatus.OK);

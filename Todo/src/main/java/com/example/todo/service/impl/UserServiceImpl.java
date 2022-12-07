@@ -14,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -30,6 +32,12 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private final UserResponseMapper userResponseMapper;
+
+    private PasswordEncoder encoder;
+
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     @Override
     public Page<UserResponseDto> getAllUser(Pageable pageable) {
@@ -49,21 +57,26 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto createUser(UserRequestDto userRequestDto) {
+        encoder = passwordEncoder();
         User user = userRequestMapper.toEntity(userRequestDto);
+        user.setPassword(encoder.encode(user.getPassword()));
         User user1 = userRepository.save(user);
         return userResponseMapper.toResponseDto(user1);
     }
 
     @Override
     public UserResponseDto updateUser(UserRequestDto userRequestDto) {
+        encoder = passwordEncoder();
         Optional<User> userOptional = userRepository.findById(userRequestDto.getId());
-        User user = new User();
-        if (userOptional.isPresent()){
-            user = userRepository.save(userRequestMapper.toEntity(userRequestDto));
-        }else {
+        User updatedUser = new User();
+        if (userOptional.isPresent()) {
+            User user = userRequestMapper.toEntity(userRequestDto);
+            user.setPassword(encoder.encode(user.getPassword()));
+            updatedUser = userRepository.save(user);
+        } else {
             throw new NullPointerException();
         }
-        return userResponseMapper.toResponseDto(user);
+        return userResponseMapper.toResponseDto(updatedUser);
     }
 
     @Override
@@ -71,7 +84,7 @@ public class UserServiceImpl implements UserService {
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()) {
             userRepository.delete(userOptional.get());
-        }else {
+        } else {
             throw new NullPointerException();
         }
     }
@@ -79,7 +92,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDetails loadUserByUsername(String username) {
         User user = userRepository.findByUsername(username);
-        if (user == null){
+        if (user == null) {
             throw new UsernameNotFoundException(username);
         }
         return new CustomUserDetails(user);

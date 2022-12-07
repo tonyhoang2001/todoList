@@ -23,7 +23,11 @@ public class User {
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid")
     private String id;
+
+    @Column(nullable = false,length = 255)
     private String username;
+
+    @Column(nullable = false,length = 255)
     private String password;
 
     @Convert(converter = RoleConverter.class)

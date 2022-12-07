@@ -20,6 +20,7 @@ public class Todo {
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid")
     private String id;
+    @Column(nullable = false,length = 255)
     private String name;
     private String description;
     @ManyToOne(cascade = CascadeType.ALL)
